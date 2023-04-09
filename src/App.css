@@ -67,6 +67,10 @@ body {
   color: #e6324b;
 }
 
+.title h2{ 
+  font-size: 1.4rem;
+}
+
 .heading-text {
   color: #000000;
 }
@@ -196,6 +200,14 @@ grid-column: 1 / -1;
   gap: 30px;
 }
 
+.training-program {
+  text-align: left;
+}
+
+.days {
+  font-weight: 700;
+}
+
 form {
   display: flex;
   flex-wrap: wrap;
@@ -238,6 +250,12 @@ select {
 
 }
 
+.loading-text {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #fff;
+}
+
 @media (max-width: 767px) {
   .container {
     display: flex;
@@ -258,9 +276,19 @@ select {
   }
   
   .title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     margin: 20px auto;
+    padding: 0 10px;
   }
+
+  .title h2 {
+    font-size: 1.0rem;
+    padding: 0 10px;
+    }
+
+    .title p {
+    font-size: 1.0rem;
+    }
   
   footer {
     height: auto;
