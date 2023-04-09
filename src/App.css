@@ -152,12 +152,14 @@ grid-column: 1 / -1;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s;
-  background-color: #e6324b;
+  background-image: linear-gradient(to right, #c53030, #9b2c2c, #6b21a8);
+
+
   width: 100%;
   white-space: nowrap;
 }
 #btn:disabled {
-  background-color: #444;
+  background-color: #4b4b4b;
   cursor: not-allowed;
 }
 
@@ -214,6 +216,21 @@ select {
   width: 100%;
   display: block;
   text-align: left;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-image: linear-gradient(to right, #d53f8c, #c53030, #4b5563);
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 1.4rem;
+  font-weight: 900;
+
 }
 
 @media (max-width: 767px) {
