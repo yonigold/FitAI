@@ -78,7 +78,7 @@ const TrainingProgramForm = () => {
           },
           {
             role: "user",
-            content: `Please create a personalized ${exerciseFrequency} training program for a ${age}-year-old ${gender} with the following details:
+            content: `Please create a personalized ${exerciseFrequency} weekly training program for a ${age}-year-old ${gender} with the following details:
             weight: ${weight} kg
             Fitness Level: ${fitnessLevel}
             Training Experience: ${trainingExperience}
