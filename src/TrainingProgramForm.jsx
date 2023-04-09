@@ -78,12 +78,13 @@ const TrainingProgramForm = () => {
           },
           {
             role: "user",
-            content: `Please create a personalized ${exerciseFrequency} weekly training program for a ${age}-year-old ${gender} with the following details:
+            content: `Please create a personalized one week week training program for a ${age}-year-old ${gender} with the following details:
             weight: ${weight} kg
             Fitness Level: ${fitnessLevel}
             Training Experience: ${trainingExperience}
             Fitness Goal: ${fitnessGoal}
             Workout Environment: ${workoutEnvironment}
+            trainingd days per week: ${exerciseFrequency}
 
             The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
             .`,
