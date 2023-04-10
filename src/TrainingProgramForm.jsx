@@ -58,13 +58,13 @@ const TrainingProgramForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
-    // if (hasGeneratedProgram) {
-    //   alert(
-    //     "You reached the limit of 1 program per user. We will be adding subscription plans soon."
-    //   );
-    //   return;
-    // }
+    const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
+    if (hasGeneratedProgram) {
+      alert(
+        "You reached the limit of 1 program per user. We will be adding subscription plans soon."
+      );
+      return;
+    }
 
     const ageError = validateAge(age);
     const weightError = validateWeight(weight);
