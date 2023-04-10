@@ -4,6 +4,7 @@ import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { OpenAI } from "openai";
 import { Audio } from 'react-loader-spinner'
+import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.css";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -57,13 +58,13 @@ const TrainingProgramForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
-    if (hasGeneratedProgram) {
-      alert(
-        "You reached the limit of 1 program per user. We will be adding subscription plans soon."
-      );
-      return;
-    }
+    // const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
+    // if (hasGeneratedProgram) {
+    //   alert(
+    //     "You reached the limit of 1 program per user. We will be adding subscription plans soon."
+    //   );
+    //   return;
+    // }
 
     const ageError = validateAge(age);
     const weightError = validateWeight(weight);
@@ -100,6 +101,7 @@ const TrainingProgramForm = () => {
 
             The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
             Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
+            In the exercise name, embed a hyperlink to google images search for each exercise in the program. the hyperlink shpuld be directly embeded in the exercise name.
             .`,
           },
         ],
@@ -159,11 +161,33 @@ const TrainingProgramForm = () => {
           </div>
         );
       } else {
-        return <p key={index}>{line}</p>;
+        // Extract exercise names from numbered list items
+        const exerciseNameRegex = /^\d+\.\s+([^–(]*)/gm;
+        const match = exerciseNameRegex.exec(line);
+        if (match !== null) {
+          const exerciseName = match[1];
+          const googleImagesSearchUrl = "https://www.google.com/search?q=";
+          const exerciseLink = (
+            <a  className="exercise-link"
+              href={`${googleImagesSearchUrl}${encodeURIComponent(exerciseName)}&tbm=isch`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {exerciseName}
+            </a>
+            // <Link to={`${googleImagesSearchUrl}${encodeURIComponent(exerciseName)}`} target="_blank">
+            //   {exerciseName}
+            // </Link>
+          );
+          return <li key={index}>{line.slice(0, match.index)}{exerciseLink}{line.slice(match.index + match[0].length)}</li>;
+        } else {
+          return <p key={index}>{line}</p>;
+        }
       }
     });
     return formattedLines;
   };
+  
 
   //   const formattedLines = lines.map((line) => {
   //     return <p>{line}</p>;

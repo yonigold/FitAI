@@ -208,6 +208,13 @@ grid-column: 1 / -1;
   font-weight: 700;
 }
 
+.exercise-link {
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 form {
   display: flex;
   flex-wrap: wrap;
