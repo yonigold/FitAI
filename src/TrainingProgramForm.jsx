@@ -101,7 +101,7 @@ const TrainingProgramForm = () => {
 
             The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
             Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
-           
+            Make sure to put the number of sets and reps in parentheses after each exercise.
             .`,
           },
         ],
