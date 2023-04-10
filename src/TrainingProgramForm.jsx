@@ -101,7 +101,7 @@ const TrainingProgramForm = () => {
 
             The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
             Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
-            In the exercise name, embed a hyperlink to google images search for each exercise in the program. the hyperlink shpuld be directly embeded in the exercise name.
+           
             .`,
           },
         ],
