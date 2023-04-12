@@ -5,6 +5,9 @@ import { Helmet } from "react-helmet-async";
 import { OpenAI } from "openai";
 import { Audio } from "react-loader-spinner";
 import { Link } from "react-router-dom";
+import Header from "./components/Header";
+import { FiClipboard } from 'react-icons/fi';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import "@fortawesome/fontawesome-free/css/all.css";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -22,6 +25,8 @@ const TrainingProgramForm = () => {
   const [loading, setLoading] = useState(false);
   const [formComplete, setFormComplete] = useState(false);
   const [errors, setErrors] = useState({ ageError: "", weightError: "" });
+
+
 
   const checkFormComplete = () => {
     if (
@@ -100,6 +105,7 @@ const TrainingProgramForm = () => {
             The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
             Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
             Make sure to put the number of sets and reps in parentheses after each exercise.
+            Make sure to format every program in the same way. 
             .`,
           },
         ],
@@ -194,6 +200,23 @@ const TrainingProgramForm = () => {
     return formattedLines;
   };
 
+
+
+  // convert formatted lines to text
+  const trainingProgramToText = (formattedProgram) => {
+    const lines = formattedProgram.map((element) => {
+      if (element.type === "li") {
+        return `- ${element.props.children}`;
+      } else if (element.type === "h4") {
+        return `* ${element.props.children}`;
+      } else {
+        return element.props.children;
+      }     
+    })
+    return lines.join("\n");
+  };
+
+
   //   const formattedLines = lines.map((line) => {
   //     return <p>{line}</p>;
   //   });
@@ -217,15 +240,15 @@ const TrainingProgramForm = () => {
           content="The Best AI Fitness Programs Generator On The Interent! Simply fill out the form and in a matter of seconds, you'll receive a fully tailored fitness program designed just for you"
         />
       </Helmet>
-
+      <Header />
       <header className="title">
-        <h1 className="font-sans h1 mb-4 leading-tight aos-init aos-animate sm:text-5xl text-4xlfont-bold text-transparent bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800 bg-clip-text ">
-          MyFit AI - Your AI Personal Trainer!
+        <h1 className="h1 mb-4 leading-tight aos-init aos-animate sm:text-5xl text-4xlfont-bold text-black pb-2 ">
+          Your AI Personal Trainer!
         </h1>
-        <h2 className="h1 mb-4 leading-tight aos-init aos-animate sm:text-3xl text-4xlfont-bold text-slate-800">
+        <h2 className="h1 mb-4 leading-tight aos-init aos-animate sm:text-3xl text-4xlfont-bold text-blue-500">
           The Best AI Fitness Programs Generator On The Interent!
         </h2>
-        <p className="font-sans text-lg heading-text text-4xl font-bold text-slate-800">
+        <p className="text-lg heading-text text-4xl font-bold text-black">
           Simply fill out the form and in a matter of seconds, you'll receive a
           fully tailored fitness program designed just for you
         </p>
@@ -372,8 +395,21 @@ const TrainingProgramForm = () => {
             //   you !
             // </p>
           )}
-          {trainingProgram && trainingProgramFormatted(trainingProgram)}
-          {/* {trainingProgram && trainingProgramFormatted(trainingProgram)} */}
+          
+        {trainingProgram && trainingProgramFormatted(trainingProgram)}
+          {!loading && (
+            <CopyToClipboard   text={
+              trainingProgram &&
+              trainingProgramFormatted(trainingProgram) &&
+              trainingProgramToText(trainingProgramFormatted(trainingProgram))
+            }>
+              <div className="copy-icon">
+                <FiClipboard />
+
+              </div>
+            </CopyToClipboard>
+          )}
+        
         </div>
       </div>
       <footer className="flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800">
