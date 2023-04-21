@@ -89,49 +89,51 @@ body {
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
+  padding-bottom: 67px;
  
 }
 
-form,
+.main-form,
 .training-program {
   background-color: #353634;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   border-radius: 5px;
   padding: 20px;
-  color: #000000;
   background-color: #2b2b2b;
-  color: #fff;
-}
-#btn {
+  margin: 20px;
+
 
 }
 
-form {
+
+ .main-form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 20px;
-  
-}
 
-label {
+} 
+
+ label {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   font-weight: 600;
+  color: white;
+
 }
 
 input,
-select {
+select  {
   margin: 5px 0 10px;
   padding: 5px;
   border: 1px solid #444;
-  border-radius: 3px;
+  border-radius: 8px;
   font-size: 14px;
-  background-color: #444;
-  color: #ccc;
+  background-color: #ffffff;
+  color: black;
   width: 100%;
-}
+} 
 
 /* #btn {
 
@@ -175,18 +177,19 @@ grid-column: 1 / -1;
 }
 
 #btn:not(:disabled) {
-  background-image: linear-gradient(to right, #c53030, #9b2c2c, #6b21a8);
+  background-color: #2563eb;
   color: #fff;
 }
 
 #btn:hover {
-  background-color: #ffffff;
+  background-color: #1e40af;
 }
 
 .training-program {
   position: relative;
   overflow-y: auto;
   max-height: 400px;
+  color: #fff;
 }
 
 .signup {
@@ -223,7 +226,7 @@ grid-column: 1 / -1;
   font-weight: bold;
 }
 
-form {
+.main-form {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -234,20 +237,16 @@ label {
   flex-basis: calc(50% - 10px);
   display: block;
   text-align: left;
-  font-size: 13px;
+  font-size: 15px;
+  
 }
 
-select {
-  margin: 5px 0 10px;
-  padding: 5px;
-  border: 1px solid #444;
-  border-radius: 3px;
-  font-size: 12px;
-  background-color: #444;
-  color: #ccc;
-  width: 100%;
-  display: block;
-  text-align: left;
+option {
+  color: #000000;
+}
+
+.label-text {
+  color: #fff;
 }
 
 .loading {
@@ -279,13 +278,34 @@ select {
   color: #fff;
 }
 
+.program-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #353634;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  color: #fff;
+  margin-bottom: 20px;
+  
+}
+
+.myprograms-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+
 @media (max-width: 767px) {
   .container {
     display: flex;
     flex-direction: column;
   }
   
-  form {
+  .main-form {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 20px;

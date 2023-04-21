@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import axios from "axios";
 import { Helmet } from "react-helmet-async";
 import { OpenAI } from "openai";
 import { Audio } from "react-loader-spinner";
@@ -8,6 +7,14 @@ import { Link } from "react-router-dom";
 import Header from "./components/Header";
 import { FiClipboard } from 'react-icons/fi';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import {  signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from './firebase/config';
+import { useNavigate } from 'react-router-dom';
+import { db } from './firebase/config';
+import { setDoc, doc, addDoc, collection, getFirestore } from "firebase/firestore";
+
+
 import "@fortawesome/fontawesome-free/css/all.css";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -25,7 +32,39 @@ const TrainingProgramForm = () => {
   const [loading, setLoading] = useState(false);
   const [formComplete, setFormComplete] = useState(false);
   const [errors, setErrors] = useState({ ageError: "", weightError: "" });
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  
 
+  useEffect(() => {
+    // Listen for changes in authentication state
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        setUser(user);
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+    });
+
+    // Clean up the listener
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("Sign-out successful.");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+
+
+  
 
 
   const checkFormComplete = () => {
@@ -62,12 +101,20 @@ const TrainingProgramForm = () => {
     e.preventDefault();
 
     const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
-    if (hasGeneratedProgram) {
+    if (!user && hasGeneratedProgram) {
       alert(
-        "You reached the limit of 1 program per user. We will be adding subscription plans soon."
-      );
-      return;
-    }
+        "You have already generated a program. Please sign up or log in to generate more programs."
+        );
+        return;
+}
+
+    // const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
+    // if (hasGeneratedProgram) {
+    //   alert(
+    //     "You reached the limit of 1 program per user. We will be adding subscription plans soon."
+    //   );
+    //   return;
+    // }
 
     const ageError = validateAge(age);
     const weightError = validateWeight(weight);
@@ -119,11 +166,37 @@ const TrainingProgramForm = () => {
       .then((data) => {
         setTrainingProgram(data.choices[0].message.content);
         setLoading(false);
-
+        
         localStorage.setItem("hasGeneratedProgram", true);
+        
       });
-  };
 
+     
+      if(user) {
+      const db = getFirestore();
+      const programsCollection = collection(db, "programs");
+      const newProgram = {
+        userId: user.uid,
+        age,
+        weight,
+        gender,
+        fitnessLevel,
+        trainingExperience,
+        exerciseFrequency,
+        fitnessGoal,
+        workoutEnvironment,
+        trainingProgram,
+
+  };
+    try {
+      const docRef = await addDoc(programsCollection, newProgram);
+      
+
+    } catch (error) {
+      
+    }
+  };
+}
   const validateAge = (age) => {
     if (age < 13 || age > 100) {
       return "You must be between 13 and 100 years old to use this service";
@@ -138,19 +211,6 @@ const TrainingProgramForm = () => {
     return "";
   };
 
-  // const trainingProgramFormatted = (trainingProgram) => {
-  //   const lines = trainingProgram.split("\n");
-  //   const formattedLines = lines.map((line, index) => {
-  //     if (line.startsWith("-")) {
-  //       return <li key={index}>{line.slice(1).trim()}</li>;
-  //     } else if (line.startsWith("*")) {
-  //       return <h4 className="days" key={index} style={{ marginTop: "3.5rem" }}>{line.slice(1).trim()}</h4>;
-  //     } else {
-  //       return <p key={index}>{line}</p>;
-  //     }
-  //   });
-  //   return formattedLines;
-  // };
 
   const trainingProgramFormatted = (trainingProgram) => {
     const lines = trainingProgram.split("\n");
@@ -241,8 +301,11 @@ const TrainingProgramForm = () => {
         />
       </Helmet>
       <Header />
+      {/* {user ? (
+        <button onClick={handleLogout}>Logout</button>
+      ) : null} */}
       <header className="title">
-        <h1 className="h1 mb-4 leading-tight aos-init aos-animate sm:text-5xl text-4xlfont-bold text-black pb-2 ">
+        <h1 className="h1 mb-1 leading-tight aos-init aos-animate sm:text-5xl text-4xlfont-bold text-black pb-2 ">
           Your AI Personal Trainer!
         </h1>
         <h2 className="h1 mb-4 leading-tight aos-init aos-animate sm:text-3xl text-4xlfont-bold text-blue-500">
@@ -252,14 +315,12 @@ const TrainingProgramForm = () => {
           Simply fill out the form and in a matter of seconds, you'll receive a
           fully tailored fitness program designed just for you
         </p>
-        {/* <div className="header-buttons">
-  <button className="mt-3 bg-gradient-to-r from-purple-600 via-purple-600 to-indigo-600 text-white border-0 hover:bg-gradient-to-r hover:from-purple-700 hover:via-purple-700 hover:to-indigo-700 py-0 px-2 font-bold rounded-md transition duration-150 ease-in-out">Sign Up</button>
-  <button className="mt-3 bg-gradient-to-r from-purple-600 via-purple-600 to-indigo-600 text-white border-0 hover:bg-gradient-to-r hover:from-purple-700 hover:via-purple-700 hover:to-indigo-700 py-0 px-2 font-bold rounded-md transition duration-150 ease-in-out">Login</button>
-</div> */}
+    
       </header>
+
       <div className="container">
-        <form onSubmit={handleSubmit}>
-          <label>
+        <form className="main-form" onSubmit={handleSubmit}>
+          <label className="label-text">
             Age:
             <input
               type="number"
@@ -267,6 +328,7 @@ const TrainingProgramForm = () => {
               onChange={(e) => setAge(e.target.value)}
               min="13"
               max="100"
+              style={{color: 'black'}}
             />
             {errors.ageError && <p className="error">{errors.ageError}</p>}
           </label>
@@ -278,6 +340,7 @@ const TrainingProgramForm = () => {
               onChange={(e) => setWeight(e.target.value)}
               min="40"
               max="220"
+              style={{color: 'black'}}
             />
             {errors.weightError && (
               <p className="error">{errors.weightError}</p>
@@ -285,7 +348,7 @@ const TrainingProgramForm = () => {
           </label>
           <label>
             Gender:
-            <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <select value={gender} onChange={(e) => setGender(e.target.value)} style={{color: 'black'}}>
               <option value="">Select gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -296,6 +359,7 @@ const TrainingProgramForm = () => {
             <select
               value={fitnessLevel}
               onChange={(e) => setFitnessLevel(e.target.value)}
+              style={{color: 'black'}}
             >
               <option value="">Select fitness level</option>
               <option value="beginner">Beginner</option>
@@ -308,6 +372,7 @@ const TrainingProgramForm = () => {
             <select
               value={trainingExperience}
               onChange={(e) => setTrainingExperience(e.target.value)}
+              style={{color: 'black'}}
             >
               <option value="">Select training experience</option>
               <option value="beginner">Beginner</option>
@@ -320,6 +385,7 @@ const TrainingProgramForm = () => {
             <select
               value={exerciseFrequency}
               onChange={(e) => setExerciseFrequency(e.target.value)}
+              style={{color: 'black'}}
             >
               <option value="">Select exercise frequency</option>
               <option value="2">2 times per week</option>
@@ -335,6 +401,7 @@ const TrainingProgramForm = () => {
             <select
               value={fitnessGoal}
               onChange={(e) => setFitnessGoal(e.target.value)}
+              style={{color: 'black'}}
             >
               <option value="">Select fitness goal</option>
               <option value="lose weight">Lose weight</option>
@@ -348,6 +415,7 @@ const TrainingProgramForm = () => {
             <select
               value={workoutEnvironment}
               onChange={(e) => setWorkoutEnvironment(e.target.value)}
+              style={{color: 'black'}}
             >
               <option value="">Select workout environment</option>
               <option value="home">Home</option>
@@ -358,12 +426,13 @@ const TrainingProgramForm = () => {
             id="btn"
             type="submit"
             disabled={!formComplete || loading}
-            className="text-rose-600"
+            className="text-blue-600"
           >
             Generate Training Program
           </button>
-        </form>
-        <div className="training-program">
+        </form> 
+
+         <div className="training-program">
           Your Training Program:
           {loading && (
             <div class="text-center loading">
@@ -390,10 +459,6 @@ const TrainingProgramForm = () => {
                 </p>
               </div>
             </div>
-            // <p className="loading">
-            //   Just a few moments, we're creating the perfect workout plan for
-            //   you !
-            // </p>
           )}
           
         {trainingProgram && trainingProgramFormatted(trainingProgram)}
@@ -409,8 +474,8 @@ const TrainingProgramForm = () => {
               </div>
             </CopyToClipboard>
           )}
-        
         </div>
+        
       </div>
       <footer className="flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800">
         <div>&copy; 2023 MyFit AI. All rights reserved.</div>
@@ -422,7 +487,8 @@ const TrainingProgramForm = () => {
           <a href="https://www.linkedin.com/in/yoni-goldshtein-55a30710a">
             <i className="fab fa-linkedin"></i>
           </a>
-        </div>
+          </div>
+        
       </footer>
       {/* fixed bottom-0 w-full */}
     </>
