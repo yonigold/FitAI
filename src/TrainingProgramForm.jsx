@@ -125,78 +125,112 @@ const TrainingProgramForm = () => {
     }
 
     setLoading(true);
-    await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Act as a personal fitness trainer and create a full training program. Make a professional program that considers science and different fitness techniques.",
-          },
-          {
-            role: "user",
-            content: `Please create a personalized one week week training program for a ${age}-year-old ${gender} with the following details:
-            weight: ${weight} kg
-            Fitness Level: ${fitnessLevel}
-            Training Experience: ${trainingExperience}
-            Fitness Goal: ${fitnessGoal}
-            Workout Environment: ${workoutEnvironment}
-            trainingd days per week: ${exerciseFrequency}
-
-            The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
-            Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
-            Make sure to put the number of sets and reps in parentheses after each exercise.
-            Make sure to format every program in the same way. 
-            .`,
-          },
-        ],
-        max_tokens: 2000,
-        temperature: 0,
-      }),
-    })
-      .then((response) => {
-        return response.json();
+    let trainingProgram = '';
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content:
+                "Act as a personal fitness trainer and create a full training program. Make a professional program that considers science and different fitness techniques.",
+            },
+            {
+              role: "user",
+              content: `Please create a personalized one week week training program for a ${age}-year-old ${gender} with the following details:
+              weight: ${weight} kg
+              Fitness Level: ${fitnessLevel}
+              Training Experience: ${trainingExperience}
+              Fitness Goal: ${fitnessGoal}
+              Workout Environment: ${workoutEnvironment}
+              trainingd days per week: ${exerciseFrequency}
+  
+              The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
+              Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
+              Make sure to put the number of sets and reps in parentheses after each exercise.
+              Make sure to format every program in the same way. 
+              .`,
+            },
+          ],
+          max_tokens: 2000,
+          temperature: 0,
+        }),
       })
-      .then((data) => {
-        setTrainingProgram(data.choices[0].message.content);
+      const data = await response.json();
+      trainingProgram = data.choices[0].message.content;
+    } catch (error) {
+      console.log(error);
+    }
+        setTrainingProgram(trainingProgram);
         setLoading(false);
-        
         localStorage.setItem("hasGeneratedProgram", true);
+
+        if (user) {
+          const db = getFirestore();
+          const programsCollection = collection(db, "programs");
+          const newProgram = {
+            userId: user.uid,
+            age,
+            weight,
+            gender,
+            fitnessLevel,
+            trainingExperience,
+            exerciseFrequency,
+            fitnessGoal,
+            workoutEnvironment,
+            trainingProgram,
+          };
+
+          try {
+            const dofRef = await addDoc(programsCollection, newProgram);
+            
+          } catch (error) {
+            console.error("Error adding document: ", error);
+          }
+        }
+      };
+
+         
+//       .then((data) => {
+//         setTrainingProgram(data.choices[0].message.content);
+//         setLoading(false);
         
-      });
+//         localStorage.setItem("hasGeneratedProgram", true);
+        
+//       });
 
      
-      if(user) {
-      const db = getFirestore();
-      const programsCollection = collection(db, "programs");
-      const newProgram = {
-        userId: user.uid,
-        age,
-        weight,
-        gender,
-        fitnessLevel,
-        trainingExperience,
-        exerciseFrequency,
-        fitnessGoal,
-        workoutEnvironment,
-        trainingProgram,
+//       if(user) {
+//       const db = getFirestore();
+//       const programsCollection = collection(db, "programs");
+//       const newProgram = {
+//         userId: user.uid,
+//         age,
+//         weight,
+//         gender,
+//         fitnessLevel,
+//         trainingExperience,
+//         exerciseFrequency,
+//         fitnessGoal,
+//         workoutEnvironment,
+//         trainingProgram,
 
-  };
-    try {
-      const docRef = await addDoc(programsCollection, newProgram);
+//   };
+//     try {
+//       const docRef = await addDoc(programsCollection, newProgram);
       
 
-    } catch (error) {
+//     } catch (error) {
       
-    }
-  };
-}
+//     }
+//   };
+// }
   const validateAge = (age) => {
     if (age < 13 || age > 100) {
       return "You must be between 13 and 100 years old to use this service";

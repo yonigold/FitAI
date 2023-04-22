@@ -45,7 +45,10 @@ function MyPrograms() {
     };
 
     // Fetch the user's programs on component mount
-    fetchPrograms();
+    if (user) {
+        fetchPrograms();
+    }
+    
 
   }, [user]);
 
