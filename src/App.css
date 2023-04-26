@@ -16,33 +16,37 @@ body,
   height: 100%;
 }
 
+
 .app {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
+.wrapper {
+  min-height: 100vh;
+}
+
 .container {
   flex: 1;
+  margin-bottom: 67px;
 }
 
 footer {
   height: 67px;
   background-color: #e6324b;
-  color: #fff;
-  
-  
+  color: #000000;
+
 }
 
-/* put the footer fixed on big screens */
-@media (min-width: 992px) and (min-height: 600px) {
+
+ @media (min-width: 992px) and (min-height: 600px) {
   footer {
     position: fixed;
     bottom: 0;
     width: 100%;
     
   }
-}
+} 
 
 footer div {
   margin: 20px;
@@ -50,7 +54,7 @@ footer div {
   font-weight: 500;
   font-size: 1.0rem;
 
-}
+} 
 
 
 
@@ -89,7 +93,7 @@ body {
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  padding-bottom: 67px;
+  margin-bottom: -67px;
  
 }
 
@@ -303,6 +307,7 @@ option {
   .container {
     display: flex;
     flex-direction: column;
+    margin-bottom: 67px;
   }
   
   .main-form {
@@ -333,8 +338,8 @@ option {
     font-size: 1.0rem;
     }
   
-  footer {
+  /* footer {
     height: auto;
     position: static;
-  }
+  } */
 }

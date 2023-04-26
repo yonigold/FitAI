@@ -3,6 +3,7 @@ import './Signup.css'
 import { Link } from 'react-router-dom';
 import {  createUserWithEmailAndPassword  } from 'firebase/auth';
 import { auth } from '../firebase/config';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 
 
@@ -12,6 +13,7 @@ function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
 
     const handleSubmit = async (e) => {
@@ -21,6 +23,7 @@ function Signup() {
             .then((userCredential) => {
                 // Signed in 
                 const user = userCredential.user;
+                navigate('/payment');
                 
                 // ...
             })

@@ -12,6 +12,7 @@ import './index.css'
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import MyPrograms from './pages/MyPrograms';
+import Payment from './pages/Payment'
 
 
 const router = createBrowserRouter([
@@ -33,6 +34,11 @@ const router = createBrowserRouter([
     canActivate: ({ user }) => !!user,
     redirect: '/login',
   },
+  {
+    path: '/payment',
+    element: <Payment />,
+
+  }
 ]);
 
 function App() {
@@ -47,6 +53,7 @@ function App() {
           <Route path="/" element={<TrainingProgramForm />} />
           <Route path="/myprograms" element={<MyPrograms />} />
           <Route path="*" element={<Navigate to="/" />} />
+          <Route path="/payment" element={<Payment />} />
         </Routes>
       );
     } else {

@@ -12,7 +12,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebase/config';
 import { useNavigate } from 'react-router-dom';
 import { db } from './firebase/config';
-import { setDoc, doc, addDoc, collection, getFirestore } from "firebase/firestore";
+import { setDoc, doc, addDoc, collection, getFirestore, getDoc } from "firebase/firestore";
 
 
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -34,7 +34,23 @@ const TrainingProgramForm = () => {
   const [errors, setErrors] = useState({ ageError: "", weightError: "" });
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  
+  const [hasPaid, setHasPaid] = useState(false);
+
+
+
+  async function createUserDocument(user) {
+    const userRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(userRef);
+
+    if (!docSnap.exists()) {
+      await setDoc(userRef, {
+        email: user.email,
+        hasPaid: false,
+        
+      });
+    }
+  }
+
 
   useEffect(() => {
     // Listen for changes in authentication state
@@ -42,6 +58,7 @@ const TrainingProgramForm = () => {
       if (user) {
         // User is signed in
         setUser(user);
+        createUserDocument(user);
       } else {
         // User is signed out
         setUser(null);
@@ -52,13 +69,27 @@ const TrainingProgramForm = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const fetchUserPaymentStatus = async () => {
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setHasPaid(data.hasPaid);
+        }
+      }
+    };
+    fetchUserPaymentStatus();
+  }, [user]);
+
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
-        console.log("Sign-out successful.");
+        // console.log("Sign-out successful.");
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
       });
   };
 
@@ -101,12 +132,17 @@ const TrainingProgramForm = () => {
     e.preventDefault();
 
     const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
-    if (!user && hasGeneratedProgram) {
+    if (!user && hasGeneratedProgram ) {
       alert(
-        "You have already generated a program. Please sign up or log in to generate more programs."
+        "You reached the limit. Please buy the preimum subscription to generate unlimited number of programs."
         );
         return;
-}
+} else if (user && hasGeneratedProgram && !hasPaid) {
+  alert(
+    "You reached the limit. Please buy the preimum subscription to generate unlimited number of programs."
+    );
+    return;
+} 
 
     // const hasGeneratedProgram = localStorage.getItem("hasGeneratedProgram");
     // if (hasGeneratedProgram) {
@@ -165,7 +201,7 @@ const TrainingProgramForm = () => {
       const data = await response.json();
       trainingProgram = data.choices[0].message.content;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
         setTrainingProgram(trainingProgram);
         setLoading(false);
@@ -191,7 +227,7 @@ const TrainingProgramForm = () => {
             const dofRef = await addDoc(programsCollection, newProgram);
             
           } catch (error) {
-            console.error("Error adding document: ", error);
+            // console.error("Error adding document: ", error);
           }
         }
       };
@@ -352,6 +388,9 @@ const TrainingProgramForm = () => {
     
       </header>
 
+
+      <div className="wrapper" style={{minHeight: '80vh'}}>
+
       <div className="container">
         <form className="main-form" onSubmit={handleSubmit}>
           <label className="label-text">
@@ -509,9 +548,51 @@ const TrainingProgramForm = () => {
             </CopyToClipboard>
           )}
         </div>
+
         
       </div>
-      <footer className="flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800">
+
+{!user && (
+      <section className="my-12 mb-24">
+  <div className="container mx-auto flex flex-col items-center">
+    <div className="max-w-md bg-white rounded-lg overflow-hidden shadow-lg">
+      <div className="px-6 py-4">
+        <h3 className="text-xl font-bold mb-2 text-gray-800">Premium Subscription</h3>
+        <ul className="list-disc ml-4">
+          <li className="mb-2">Unlimited Programs generation</li>
+          <li className="mb-2">Personalized Meal plans (soon)</li>
+          <li className="mb-2">Free acsess to new features</li>
+        </ul>
+      </div>
+      <div className="px-6 py-4">
+        <p className="text-gray-700 text-lg font-bold mb-2">Upgrade to Premium now!</p>
+        <Link to='/signup'><button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+          Subscribe
+        </button></Link>
+      </div>
+    </div>
+  </div>
+</section>
+)}
+
+
+</div>
+
+<footer className="relative bottom-0 w-full flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800 mt-auto">
+  <div>&copy; 2023 MyFit AI. All rights reserved.</div>
+  <div className="flex items-center space-x-4">
+    <span>Built by Yoni Goldshtein</span>
+    <a href="https://twitter.com/yonigold14?s=21&t=r9WjV3geZvcLI2EcCo3dYg">
+      <i className="fab fa-twitter"></i>
+    </a>
+    <a href="https://www.linkedin.com/in/yoni-goldshtein-55a30710a">
+      <i className="fab fa-linkedin"></i>
+    </a>
+  </div>
+</footer>
+
+
+      {/* <footer className="flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800">
         <div>&copy; 2023 MyFit AI. All rights reserved.</div>
         <div className="flex items-center space-x-4">
           <span>Built by Yoni Goldshtein</span>
@@ -523,7 +604,7 @@ const TrainingProgramForm = () => {
           </a>
           </div>
         
-      </footer>
+      </footer> */}
       {/* fixed bottom-0 w-full */}
     </>
   );
