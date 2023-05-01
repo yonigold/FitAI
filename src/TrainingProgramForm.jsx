@@ -379,7 +379,7 @@ const TrainingProgramForm = () => {
           Your AI Personal Trainer!
         </h1>
         <h2 className="h1 mb-4 leading-tight aos-init aos-animate sm:text-3xl text-4xlfont-bold text-blue-500">
-          The Best AI Fitness Programs Generator On The Interent!
+          The Best AI Fitness Programs Generator On The Internet!
         </h2>
         <p className="text-lg heading-text text-4xl font-bold text-black">
           Simply fill out the form and in a matter of seconds, you'll receive a
