@@ -563,23 +563,25 @@ const TrainingProgramForm = () => {
               <div className="max-w-md bg-white rounded-lg overflow-hidden shadow-lg">
                 <div className="px-6 py-4">
                   <h3 className="text-xl font-bold mb-2 text-gray-800">
-                    Premium Subscription
+                    Life Time Premium Subscription
                   </h3>
                   <ul className="list-disc ml-4">
                     <li className="mb-2">Unlimited Programs generation</li>
                     <li className="mb-2">Personalized Meal plans (soon)</li>
-                    <li className="mb-2">Free acsess to new features</li>
+                    <li className="mb-2">Free access to new features</li>
+                    <li className="mb-2">One time payment</li>
                   </ul>
                 </div>
-                <div className="px-6 py-4">
+                <div className="px-6 py-2">
                   <p className="text-gray-700 text-lg font-bold mb-2">
-                    Upgrade to Premium now!
+                    Upgrade now for only 4.99$
                   </p>
                   <Link to="/signup">
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
                       Subscribe
                     </button>
                   </Link>
+                  <p className="text-gray-400 text-sm mt-2">No Cancellation</p>
                 </div>
               </div>
             </div>

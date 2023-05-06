@@ -123,7 +123,7 @@ function Payment() {
               Lifetime Subscription for first Access to new features and
               Unlimited Training Programs Generation!
             </p>
-            <p className="text-3xl font-bold text-gray-800">$9.99</p>
+            <p className="text-3xl font-bold text-gray-800">$4.99</p>
             <p className="text-gray-600">(one-time payment)</p>
           </div>
           <PayPalScriptProvider
