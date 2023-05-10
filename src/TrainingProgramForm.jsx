@@ -383,16 +383,9 @@ const TrainingProgramForm = () => {
           Save Money & Time! With MyFit AI, you can get a fully tailored fitness programs and meal plans designed just for you in a matter of seconds!
         </p>
         <div className="flex p-2 items-center justify-center">
-          <a
-            href="https://www.futurepedia.io/tool/myfit-ai?utm_source=myfit-ai_embed"
-            style={{ width: "250px", height: "54px" }}
-          >
-            <img
-              src="https://www.futurepedia.io/api/image-widget?toolId=ff3ea568-68a5-4806-93d3-8771b8e17711"
-              alt="Myfit-AI | Featured on Futurepedia"
-              style={{ width: "250px", height: "54px" }}
-            />
-          </a>
+        <a href="https://www.producthunt.com/posts/myfit-ai?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-myfit-ai" target="_blank">
+  <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=393725&theme=light" alt="Myfit-AI - Generate Personal Fitness Programs And Meal Plans With AI | Product Hunt" style={{ width: '250px', height: '54px' }} width="250" height="54" />
+</a>
         </div>
       </header>
 {!user && (
