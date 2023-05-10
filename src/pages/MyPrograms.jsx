@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 
 function MyPrograms() {
   const [programs, setPrograms] = useState([]);
+  const [menus, setMenus] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +52,48 @@ function MyPrograms() {
     
 
   }, [user]);
+
+  const fetchMenuPlans = async () => {
+    const menuPlansRef = collection(db, "menus");
+    const q = query(menuPlansRef, where("userId", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+  
+    const fetchedMenuPlans = [];
+    querySnapshot.forEach((doc) => {
+      fetchedMenuPlans.push({ id: doc.id, ...doc.data() });
+    });
+  
+    setMenus(fetchedMenuPlans);
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchMenuPlans();
+    }
+  }, [user]);
+
+  const menuFormatted = (menu) => {
+    if (menu) {
+      // Add line breaks before each meal type (e.g., Breakfast, Mid-morning snack, Lunch, etc.)
+      const formattedMenu = menu.replace(/([A-Za-z\s-]+)(\([\d\s\w]+\):)/g, "\n$1$2");
+  
+      // Add line breaks after semicolons
+      const formattedMenuWithSemicolons = formattedMenu.replace(/;/g, ";\n");
+  
+      // Split the formatted menu into lines
+      const lines = formattedMenuWithSemicolons.split("\n");
+  
+      // Format each line as a paragraph element
+      const formattedLines = lines.map((line, index) => {
+        return <p key={index}>{line.trim()}</p>;
+      });
+  
+      return formattedLines;
+    }
+    return "";
+  };
+
+
 
   const trainingProgramFormatted = (trainingProgram) => {
     const lines = trainingProgram.split("\n");
@@ -114,7 +157,7 @@ function MyPrograms() {
 <div>
   {loading ? (
     <p>Loading...</p>
-  ) : programs.length > 0 ? (
+  ) : programs.length > 0  || menus.length > 0 ? (
     <div className="myprograms-container grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {programs.map((program) => (
         <div key={program.id} className="training-program  p-4 rounded-lg ">
@@ -122,6 +165,13 @@ function MyPrograms() {
           <div className="text-sm">{trainingProgramFormatted(program.trainingProgram)}</div>
         </div>
       ))}
+      {menus.map((menu) => (
+        <div key={menu.id} className="training-program menu-program p-4 rounded-lg">
+          <p className="font-bold mb-2">Menu Plan:</p>
+          <div className="text-sm">{menuFormatted(menu.menu)}</div>
+          </div>
+      ))}
+      
     </div>
   ) : (
     <p>No programs found.</p>

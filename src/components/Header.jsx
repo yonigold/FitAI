@@ -88,8 +88,12 @@ function Header() {
     {isLogged && !loading && (
       <>
         <button className='bg-gray-700 hover:bg-blue-600 text-white py-2 px-4 md:py-3 md:px-5 rounded-full ml-3' onClick={handleLogout}>Logout</button>
-        <Link to="/myprograms"><button className="bg-gray-700 hover:bg-gray-800 text-white py-2 px-4 md:py-3 md:px-5 rounded-full mt-2 md:mt-0 md:ml-3">My Programs</button></Link>
-        
+        {hasPaid && (
+          <>
+        <Link to="/menuPlanner"><button className="bg-green-700 hover:bg-gray-800 text-white py-2 px-4 md:py-3 md:px-5 rounded-full mt-2 md:mt-0 md:ml-3">Menu Planner</button></Link>
+        <Link to="/myprograms"><button className="bg-blue-500 hover:bg-gray-800 text-white py-2 px-4 md:py-3 md:px-5 rounded-full mt-2 md:mt-0 md:ml-3">My Programs</button></Link>
+        </>
+        )}
         {!hasPaid && (
       <>
       

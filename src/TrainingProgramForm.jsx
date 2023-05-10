@@ -178,7 +178,7 @@ const TrainingProgramForm = () => {
               },
               {
                 role: "user",
-                content: `Please create a personalized one week week training program for a ${age}-year-old ${gender} with the following details:
+                content: `Please create a personalized one week training program for a ${age}-year-old ${gender} with the following details:
               weight: ${weight} kg
               Fitness Level: ${fitnessLevel}
               Training Experience: ${trainingExperience}
@@ -345,6 +345,12 @@ const TrainingProgramForm = () => {
   //   return formattedLines;
   // };
 
+  const handleFreeTrialClick = () => {
+    const section = document.getElementById("form");
+    section.scrollIntoView({ behavior: "smooth" });
+  };
+
+
   return (
     <>
       <Helmet>
@@ -368,14 +374,13 @@ const TrainingProgramForm = () => {
       ) : null} */}
       <header className="title">
         <h1 className="h1 mb-1 leading-tight aos-init aos-animate sm:text-5xl text-4xlfont-bold text-black pb-2 ">
-          Your AI Personal Trainer!
+          Your AI Personal Trainer 💪
         </h1>
         <h2 className="h1 mb-4 leading-tight aos-init aos-animate sm:text-3xl text-4xlfont-bold text-blue-500">
-          The Best AI Fitness Programs Generator On The Internet!
+          Start today and get 10x your fitness results!
         </h2>
-        <p className="text-lg heading-text text-4xl font-bold text-black">
-          Simply fill out the form and in a matter of seconds, you'll receive a
-          fully tailored fitness program designed just for you
+        <p className="heading-text text-base font-bold text-black">
+          Save Money & Time! With MyFit AI, you can get a fully tailored fitness programs and meal plans designed just for you in a matter of seconds!
         </p>
         <div className="flex p-2 items-center justify-center">
           <a
@@ -390,7 +395,71 @@ const TrainingProgramForm = () => {
           </a>
         </div>
       </header>
+{!user && (
+          <>
+<div className="cards-container">
+    <section className="my-1 mb-16">
+      <div className="container mx-auto">
+        <div className="flex flex-wrap justify-center items-start">
+          <div className="max-w-md bg-black rounded-lg overflow-hidden shadow-lg mx-4 mb-6">
+        <div className="px-3 py-4">
+          <h3 className="text-xl font-bold mb-2 text-white">
+            Life Time Premium Subscription
+          </h3>
+          <ul className="list-disc ml-4">
+            <li className="mb-2 text-white">Unlimited Programs Generation</li>
+            <li className="mb-2 text-white">Personalised Meal Plans Generator</li>
+            <li className="mb-2 text-white">Programs saved automatically for easy access</li>
+           <li className="mb-2 text-white">Free access to new features</li>
+   
+          </ul>
+        </div>
+        <div className="px-6 py-2">
+          <p className="text-white text-lg font-bold mb-2">
+            Upgrade now for only 4.99$
+          </p>
+          <Link to="/signup">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+              Subscribe
+            </button>
+          </Link>
+          <p className="text-gray-400 text-sm mt-2">No Cancellation</p>
+        </div>
+      </div>
+ </div>
+      <div className="max-w-md bg-white rounded-lg overflow-hidden shadow-lg mx-4 mb-6">
 
+        <div className="px-6 py-4">
+          <h3 className="text-xl font-bold mb-2 ">
+            Free Try
+          </h3>
+          <ul className="list-disc ml-4">
+            <li className="mb-2 ">One Free Training Program Generation</li>
+            <li className="mb-2 ">Limited Access to new features</li>
+            <li className="mb-2 ">No programs saving</li>
+            <li className="mb-2 ">No Meal Plans Generator</li>          
+
+
+          
+          </ul>
+        </div>
+        <div className="px-6 py-2">
+          <p className="text-black text-lg font-bold mb-2">
+            Try now for free
+          </p>
+
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={handleFreeTrialClick}>
+              Subscribe
+            </button>
+
+        </div>
+      </div>
+    
+ </div>
+</section>
+</div>
+</>
+        )}
       <div className="wrapper" style={{ minHeight: "80vh" }}>
         <div className="container">
           <form className="main-form" onSubmit={handleSubmit}>
@@ -510,7 +579,7 @@ const TrainingProgramForm = () => {
             </button>
           </form>
 
-          <div className="training-program">
+          <div className="training-program" id="form">
             Your Training Program:
             {loading && (
               <div class="text-center loading">
@@ -533,7 +602,7 @@ const TrainingProgramForm = () => {
                   </svg>
                   <p className="loading-text">
                     Just a few moments, we're creating the perfect workout plan
-                    for...
+                    for you...
                   </p>
                 </div>
               </div>
@@ -557,36 +626,7 @@ const TrainingProgramForm = () => {
           </div>
         </div>
 
-        {!user && (
-          <section className="my-12 mb-24">
-            <div className="container mx-auto flex flex-col items-center">
-              <div className="max-w-md bg-white rounded-lg overflow-hidden shadow-lg">
-                <div className="px-6 py-4">
-                  <h3 className="text-xl font-bold mb-2 text-gray-800">
-                    Life Time Premium Subscription
-                  </h3>
-                  <ul className="list-disc ml-4">
-                    <li className="mb-2">Unlimited Programs generation</li>
-                    <li className="mb-2">Personalized Meal plans (soon)</li>
-                    <li className="mb-2">Free access to new features</li>
-                    <li className="mb-2">One time payment</li>
-                  </ul>
-                </div>
-                <div className="px-6 py-2">
-                  <p className="text-gray-700 text-lg font-bold mb-2">
-                    Upgrade now for only 4.99$
-                  </p>
-                  <Link to="/signup">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                      Subscribe
-                    </button>
-                  </Link>
-                  <p className="text-gray-400 text-sm mt-2">No Cancellation</p>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
+        
       </div>
 
       <footer className="relative bottom-0 w-full flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800 mt-auto">
@@ -602,20 +642,6 @@ const TrainingProgramForm = () => {
         </div>
       </footer>
 
-      {/* <footer className="flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800">
-        <div>&copy; 2023 MyFit AI. All rights reserved.</div>
-        <div className="flex items-center space-x-4">
-          <span>Built by Yoni Goldshtein</span>
-          <a href="https://twitter.com/yonigold14?s=21&t=r9WjV3geZvcLI2EcCo3dYg">
-            <i className="fab fa-twitter"></i>
-          </a>
-          <a href="https://www.linkedin.com/in/yoni-goldshtein-55a30710a">
-            <i className="fab fa-linkedin"></i>
-          </a>
-          </div>
-        
-      </footer> */}
-      {/* fixed bottom-0 w-full */}
     </>
   );
 };

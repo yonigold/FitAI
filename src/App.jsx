@@ -13,6 +13,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import MyPrograms from './pages/MyPrograms';
 import Payment from './pages/Payment'
+import MealPlanner from './pages/MenuPlanner'
+import MenuPlanner from './pages/MenuPlanner'
 
 
 const router = createBrowserRouter([
@@ -38,6 +40,10 @@ const router = createBrowserRouter([
     path: '/payment',
     element: <Payment />,
 
+  },
+  {
+    path: '/mealPlanner',
+    element: <MenuPlanner />,
   }
 ]);
 
@@ -54,6 +60,7 @@ function App() {
           <Route path="/myprograms" element={<MyPrograms />} />
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/menuPlanner" element={<MenuPlanner />} />
         </Routes>
       );
     } else {

@@ -23,7 +23,15 @@ body,
 }
 
 .wrapper {
-  min-height: 100vh;
+  
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  
 }
 
 .container {
@@ -50,7 +58,7 @@ footer {
 
 footer div {
   margin: 20px;
-  color: #000000;
+  color: #ffffff;
   font-weight: 500;
   font-size: 1.0rem;
 
@@ -300,6 +308,18 @@ option {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+}
+
+.menu-program {
+  background-color:#2b2b2b;
+}
+
+.menu-form {
+  background-color: #2b2b2b;
+}
+
+.formatted-menu p {
+  margin-bottom: 1rem; /* Adjust this value to control the space between lines */
 }
 
 
