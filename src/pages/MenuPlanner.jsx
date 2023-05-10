@@ -17,6 +17,8 @@ import {
   getFirestore,
   getDoc,
 } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
+
 import "@fortawesome/fontawesome-free/css/all.css";
 
 function MenuPlanner() {
@@ -37,6 +39,9 @@ function MenuPlanner() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [hasPaid, setHasPaid] = useState(false);
+  const functions = getFunctions();
+  const generateTrainingProgram = httpsCallable(functions, 'generateTrainingProgram');
+
 
     useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -91,45 +96,29 @@ function MenuPlanner() {
     setLoading(true);
 
     let menu = "";
-    try {
-      const response = await fetch(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "system",
-                content:
-                  "Act as a personal fitness trainer & nutriton expert and create a menu plan for according to the details of the trainee. Make a professional menu that considers nutrition fundemntals and the trainee fitness goals.",
-              },
-              {
-                role: "user",
-                content: `Please create a personalized one day menu plan for a ${age}-year-old ${gender} with the following details:
-                  weight: ${weight} kg
-                  nutritionRatioPreference: ${nutritionRatioPreference}
-                  activityLevel: ${activityLevel}
-                  exerciseFrequency: ${exerciseFrequency}
-                  fitnessGoal: ${fitnessGoal}
-                  dietaryPreference: ${dietaryPreference}
+try {
+  const messages = [
+    {
+      role: "system",
+      content:
+        "Act as a personal fitness trainer & nutriton expert and create a menu plan for according to the details of the trainee. Make a professional menu that considers nutrition fundemntals and the trainee fitness goals.",
+    },
+    {
+      role: "user",
+      content: `Please create a personalized one day menu plan for a ${age}-year-old ${gender} with the following details:
+    weight: ${weight} kg
+    nutritionRatioPreference: ${nutritionRatioPreference}
+    activityLevel: ${activityLevel}
+    exerciseFrequency: ${exerciseFrequency}
+    fitnessGoal: ${fitnessGoal}
+    dietaryPreference: ${dietaryPreference}
+    Please provide daily caloric intake and protein, carbohydrate, and fat amounts for each day
 
-                  Please provide daily caloric intake and protein, carbohydrate, and fat amounts for each day
-      
-                  .`,
-              },
-            ],
-            max_tokens: 2000,
-            temperature: 0,
-          }),
-        }
-      );
-      const data = await response.json();
-      menu = data.choices[0].message.content;
+    .`,
+    },
+  ];
+      const result = await generateTrainingProgram({ messages });
+      menu = result.data.choices[0].message.content;
     } catch (error) {
       console.log(error);
     }

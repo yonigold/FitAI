@@ -20,6 +20,7 @@ import {
   getFirestore,
   getDoc,
 } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import "@fortawesome/fontawesome-free/css/all.css";
 
@@ -41,6 +42,11 @@ const TrainingProgramForm = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [hasPaid, setHasPaid] = useState(false);
+  const functions = getFunctions();
+  const generateTrainingProgram = httpsCallable(
+    functions,
+    "generateTrainingProgram"
+  );
 
   async function createUserDocument(user) {
     const userRef = doc(db, "users", user.uid);
@@ -160,46 +166,32 @@ const TrainingProgramForm = () => {
     setLoading(true);
     let trainingProgram = "";
     try {
-      const response = await fetch(
-        "https://api.openai.com/v1/chat/completions",
+      const messages = [
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "system",
-                content:
-                  "Act as a personal fitness trainer and create a full training program. Make a professional program that considers science and different fitness techniques.",
-              },
-              {
-                role: "user",
-                content: `Please create a personalized one week training program for a ${age}-year-old ${gender} with the following details:
-              weight: ${weight} kg
-              Fitness Level: ${fitnessLevel}
-              Training Experience: ${trainingExperience}
-              Fitness Goal: ${fitnessGoal}
-              Workout Environment: ${workoutEnvironment}
-              trainingd days per week: ${exerciseFrequency}
-  
-              The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
-              Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
-              Make sure to put the number of sets and reps in parentheses after each exercise.
-              Make sure to format every program in the same way. 
-              .`,
-              },
-            ],
-            max_tokens: 2000,
-            temperature: 0,
-          }),
-        }
-      );
-      const data = await response.json();
-      trainingProgram = data.choices[0].message.content;
+          role: "system",
+          content:
+            "Act as a personal fitness trainer and create a full training program. Make a professional program that considers science and different fitness techniques.",
+        },
+        {
+          role: "user",
+          content: `Please create a personalized one week training program for a ${age}-year-old ${gender} with the following details:
+        weight: ${weight} kg
+        Fitness Level: ${fitnessLevel}
+        Training Experience: ${trainingExperience}
+        Fitness Goal: ${fitnessGoal}
+        Workout Environment: ${workoutEnvironment}
+        trainingd days per week: ${exerciseFrequency}
+    
+        The training program should include a balanced mix of exercises, rest days, and suggestions for progression. Please provide a detailed workout plan with specific exercises, sets, reps, and any necessary instructions.
+        Please format and style the program in a nice and readable way and make sure to add a line break between each day of the training program.
+        Make sure to put the number of sets and reps in parentheses after each exercise.
+        Make sure to format every program in the same way. 
+        .`,
+        },
+      ];
+
+      const result = await generateTrainingProgram({ messages });
+      trainingProgram = result.data.choices[0].message.content;
     } catch (error) {
       // console.log(error);
     }
@@ -350,7 +342,6 @@ const TrainingProgramForm = () => {
     section.scrollIntoView({ behavior: "smooth" });
   };
 
-
   return (
     <>
       <Helmet>
@@ -380,79 +371,95 @@ const TrainingProgramForm = () => {
           Start today and get 10x your fitness results!
         </h2>
         <p className="heading-text text-base font-bold text-black">
-          Save Money & Time! With MyFit AI, you can get a fully tailored fitness programs and meal plans designed just for you in a matter of seconds!
+          Save Money & Time! With MyFit AI, you can get a fully tailored fitness
+          programs and meal plans designed just for you in a matter of seconds!
         </p>
         <div className="flex p-2 items-center justify-center">
-        <a href="https://www.producthunt.com/posts/myfit-ai?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-myfit-ai" target="_blank">
-  <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=393725&theme=light" alt="Myfit-AI - Generate Personal Fitness Programs And Meal Plans With AI | Product Hunt" style={{ width: '250px', height: '54px' }} width="250" height="54" />
-</a>
+          <a
+            href="https://www.producthunt.com/posts/myfit-ai?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-myfit-ai"
+            target="_blank"
+          >
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=393725&theme=light"
+              alt="Myfit-AI - Generate Personal Fitness Programs And Meal Plans With AI | Product Hunt"
+              style={{ width: "250px", height: "54px" }}
+              width="250"
+              height="54"
+            />
+          </a>
         </div>
       </header>
-{!user && (
-          <>
-<div className="cards-container">
-    <section className="my-1 mb-16">
-      <div className="container mx-auto">
-        <div className="flex flex-wrap justify-center items-start">
-          <div className="max-w-md bg-black rounded-lg overflow-hidden shadow-lg mx-4 mb-6">
-        <div className="px-3 py-4">
-          <h3 className="text-xl font-bold mb-2 text-white">
-            Life Time Premium Subscription
-          </h3>
-          <ul className="list-disc ml-4">
-            <li className="mb-2 text-white">Unlimited Programs Generation</li>
-            <li className="mb-2 text-white">Personalised Meal Plans Generator</li>
-            <li className="mb-2 text-white">Programs saved automatically for easy access</li>
-           <li className="mb-2 text-white">Free access to new features</li>
-   
-          </ul>
-        </div>
-        <div className="px-6 py-2">
-          <p className="text-white text-lg font-bold mb-2">
-            Upgrade now for only 4.99$
-          </p>
-          <Link to="/signup">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-              Subscribe
-            </button>
-          </Link>
-          <p className="text-gray-400 text-sm mt-2">No Cancellation</p>
-        </div>
-      </div>
- </div>
-      <div className="max-w-md bg-white rounded-lg overflow-hidden shadow-lg mx-4 mb-6">
+      {!user && (
+        <>
+          <div className="cards-container">
+            <section className="my-1 mb-16">
+              <div className="container mx-auto">
+                <div className="flex flex-wrap justify-center items-start">
+                  <div className="max-w-md bg-black rounded-lg overflow-hidden shadow-lg mx-4 mb-6">
+                    <div className="px-3 py-4">
+                      <h3 className="text-xl font-bold mb-2 text-white">
+                        Life Time Premium Subscription
+                      </h3>
+                      <ul className="list-disc ml-4">
+                        <li className="mb-2 text-white">
+                          Unlimited Programs Generation
+                        </li>
+                        <li className="mb-2 text-white">
+                          Personalised Meal Plans Generator
+                        </li>
+                        <li className="mb-2 text-white">
+                          Programs saved automatically for easy access
+                        </li>
+                        <li className="mb-2 text-white">
+                          Free access to new features
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="px-6 py-2">
+                      <p className="text-white text-lg font-bold mb-2">
+                        Upgrade now for only 4.99$
+                      </p>
+                      <Link to="/signup">
+                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                          Subscribe
+                        </button>
+                      </Link>
+                      <p className="text-gray-400 text-sm mt-2">
+                        No Cancellation
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="max-w-md bg-white rounded-lg overflow-hidden shadow-lg mx-4 mb-6">
+                  <div className="px-6 py-4">
+                    <h3 className="text-xl font-bold mb-2 ">Free Try</h3>
+                    <ul className="list-disc ml-4">
+                      <li className="mb-2 ">
+                        One Free Training Program Generation
+                      </li>
+                      <li className="mb-2 ">Limited Access to new features</li>
+                      <li className="mb-2 ">No programs saving</li>
+                      <li className="mb-2 ">No Meal Plans Generator</li>
+                    </ul>
+                  </div>
+                  <div className="px-6 py-2">
+                    <p className="text-black text-lg font-bold mb-2">
+                      Try now for free
+                    </p>
 
-        <div className="px-6 py-4">
-          <h3 className="text-xl font-bold mb-2 ">
-            Free Try
-          </h3>
-          <ul className="list-disc ml-4">
-            <li className="mb-2 ">One Free Training Program Generation</li>
-            <li className="mb-2 ">Limited Access to new features</li>
-            <li className="mb-2 ">No programs saving</li>
-            <li className="mb-2 ">No Meal Plans Generator</li>          
-
-
-          
-          </ul>
-        </div>
-        <div className="px-6 py-2">
-          <p className="text-black text-lg font-bold mb-2">
-            Try now for free
-          </p>
-
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={handleFreeTrialClick}>
-              Try Now
-            </button>
-
-        </div>
-      </div>
-    
- </div>
-</section>
-</div>
-</>
-        )}
+                    <button
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                      onClick={handleFreeTrialClick}
+                    >
+                      Try Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </>
+      )}
       <div className="wrapper" style={{ minHeight: "80vh" }}>
         <div className="container">
           <form className="main-form" onSubmit={handleSubmit}>
@@ -618,8 +625,6 @@ const TrainingProgramForm = () => {
             )}
           </div>
         </div>
-
-        
       </div>
 
       <footer className="relative bottom-0 w-full flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800 mt-auto">
@@ -634,7 +639,6 @@ const TrainingProgramForm = () => {
           </a>
         </div>
       </footer>
-
     </>
   );
 };

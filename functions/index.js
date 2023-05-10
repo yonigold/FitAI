@@ -3,6 +3,7 @@ const paypal = require("@paypal/checkout-server-sdk");
 const cors = require("cors")({origin: true});
 
 
+
 const clientId = functions.config().paypal.client_id;
 const clientSecret = functions.config().paypal.client_secret;
 
@@ -58,6 +59,24 @@ exports.captureOrder = functions.https.onRequest((request, response) => {
         return response.status(200).json(order);
     });
 });
+
+exports.generateTrainingProgram = functions.https.onCall(async (data, context) => {
+    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: "gpt-3.5-turbo",
+        messages: data.messages,
+        max_tokens: 2000,
+        temperature: 0,
+    }, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${functions.config().openai.key}`
+        }
+    });
+
+    return response.data;
+});
+
+
 
 
 
