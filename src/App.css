@@ -327,7 +327,14 @@ option {
   .container {
     display: flex;
     flex-direction: column;
-    margin-bottom: 67px;
+    margin-bottom: 27px;
+  }
+  .cards-container {
+    margin-bottom: 10px;
+  }
+
+  .cards-container section {
+    margin-bottom: 2px;
   }
   
   .main-form {
@@ -344,13 +351,13 @@ option {
   }
   
   .title {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     margin: 20px auto;
     padding: 0 10px;
   }
 
   .title h2 {
-    font-size: 1.0rem;
+    font-size: 0.9rem;
     padding: 0 10px;
     }
 
