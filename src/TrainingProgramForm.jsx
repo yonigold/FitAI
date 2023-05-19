@@ -22,6 +22,9 @@ import {
 } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
+import axios from 'axios';
+
+
 import "@fortawesome/fontawesome-free/css/all.css";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -190,7 +193,10 @@ const TrainingProgramForm = () => {
         },
       ];
 
-      const result = await generateTrainingProgram({ messages });
+      const result = await axios.post('https://us-central1-myfit-ai.cloudfunctions.net/generateTrainingProgram', {
+        messages
+      });
+      // const result = await generateTrainingProgram({ messages });
       trainingProgram = result.data.choices[0].message.content;
     } catch (error) {
       // console.log(error);
@@ -281,7 +287,6 @@ const TrainingProgramForm = () => {
           </div>
         );
       } else {
-        // Extract exercise names from numbered list items
         const exerciseNameRegex = /^\d+\.\s+([^–(]*)/gm;
         const match = exerciseNameRegex.exec(line);
         if (match !== null) {
@@ -298,9 +303,6 @@ const TrainingProgramForm = () => {
             >
               {exerciseName}
             </a>
-            // <Link to={`${googleImagesSearchUrl}${encodeURIComponent(exerciseName)}`} target="_blank">
-            //   {exerciseName}
-            // </Link>
           );
           return (
             <li key={index}>
@@ -314,22 +316,31 @@ const TrainingProgramForm = () => {
         }
       }
     });
-    return formattedLines;
+    return <div>{formattedLines}</div>;
   };
-
+  
+  
   // convert formatted lines to text
   const trainingProgramToText = (formattedProgram) => {
-    const lines = formattedProgram.map((element) => {
-      if (element.type === "li") {
-        return `- ${element.props.children}`;
-      } else if (element.type === "h4") {
-        return `* ${element.props.children}`;
-      } else {
-        return element.props.children;
+    const getTextContent = (element) => {
+      if (typeof element === "string") {
+        return element;
+      } else if (element.props.children) {
+        if (Array.isArray(element.props.children)) {
+          return element.props.children.map(getTextContent).join("\n");
+        } else {
+          return getTextContent(element.props.children);
+        }
       }
-    });
-    return lines.join("\n");
+      return "";
+    };
+  
+    return getTextContent(formattedProgram);
   };
+  
+  
+  
+  
 
   //   const formattedLines = lines.map((line) => {
   //     return <p>{line}</p>;
@@ -607,25 +618,25 @@ const TrainingProgramForm = () => {
                 </div>
               </div>
             )}
-            {trainingProgram && trainingProgramFormatted(trainingProgram)}
-            {!loading && (
-              <CopyToClipboard
-                text={
-                  trainingProgram &&
-                  trainingProgramFormatted(trainingProgram) &&
-                  trainingProgramToText(
-                    trainingProgramFormatted(trainingProgram)
-                  )
-                }
-              >
-                <div className="copy-icon">
-                  <FiClipboard />
-                </div>
-              </CopyToClipboard>
-            )}
+         {trainingProgram && trainingProgramFormatted(trainingProgram)}
+{!loading && (
+  <CopyToClipboard
+    text={
+      trainingProgram &&
+      trainingProgramToText(trainingProgramFormatted(trainingProgram))
+    }
+  >
+    <div className="copy-icon">
+      <FiClipboard />
+    </div>
+  </CopyToClipboard>
+)}
           </div>
         </div>
       </div>
+
+     
+                
 
       <footer className="relative bottom-0 w-full flex justify-between items-center py-3 bg-gradient-to-r from-rose-600 via-rose-700 to-purple-800 mt-auto">
         <div>&copy; 2023 MyFit AI. All rights reserved.</div>

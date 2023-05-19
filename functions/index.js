@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const paypal = require("@paypal/checkout-server-sdk");
 const cors = require("cors")({origin: true});
+ 
 
 
 
@@ -60,21 +61,49 @@ exports.captureOrder = functions.https.onRequest((request, response) => {
     });
 });
 
-exports.generateTrainingProgram = functions.https.onCall(async (data, context) => {
-    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: "gpt-3.5-turbo",
-        messages: data.messages,
-        max_tokens: 2000,
-        temperature: 0,
-    }, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${functions.config().openai.key}`
+
+
+// exports.generateTrainingProgram = functions.https.onCall(async (data, context) => {
+//     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+//         model: "gpt-3.5-turbo",
+//         messages: data.messages,
+//         max_tokens: 2000,
+//         temperature: 0,
+//     }, {
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${functions.config().openai.key}`
+//         }
+//     });
+
+//     return response.data;
+// });
+
+exports.generateTrainingProgram= functions.https.onRequest((request, response) => {
+    cors(request, response, async () => {
+        try {
+            const responseData = await axios.post('https://api.openai.com/v1/chat/completions', {
+                model: "gpt-3.5-turbo",
+                messages: request.body.messages,
+                max_tokens: 2000,
+                temperature: 0,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${functions.config().openai.key}`
+                }
+            });
+
+            return response.status(200).json(responseData.data);
+        } catch (error) {
+            console.error('Error executing generateTrainingProgram:', error);
+            return response.status(500).json({ error: error.message });
         }
     });
-
-    return response.data;
 });
+
+    
+
 
 
 

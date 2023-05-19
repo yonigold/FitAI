@@ -163,6 +163,7 @@ function MyPrograms() {
         <div key={program.id} className="training-program  p-4 rounded-lg ">
           <p className="font-bold mb-2">Training Program:</p>
           <div className="text-sm">{trainingProgramFormatted(program.trainingProgram)}</div>
+          {/* <button style={{color: 'blue'}}>Progress </button> */}
         </div>
       ))}
       {menus.map((menu) => (
