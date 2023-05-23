@@ -59,9 +59,13 @@ exports.captureOrder = functions.https.onRequest((request, response) => {
     });
 });
 
+const runtimeOpts = {
+    timeoutSeconds: 300,
+    memory: '1GB'
+};
 
-
-exports.generateTrainingProgramNew = functions.https.onCall(async (data, context) => {
+exports.generateTrainingProgramNew = functions.runWith(runtimeOpts).https.onCall(async (data, context) => {
+    try {
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
         model: "gpt-3.5-turbo",
         messages: data.messages,
@@ -75,13 +79,12 @@ exports.generateTrainingProgramNew = functions.https.onCall(async (data, context
     });
 
     return response.data;
+} catch (error) {
+    console.error('OpenAI API error:', error);
+    throw new functions.https.HttpsError('unknown', 'OpenAI API error');
+  }
+
 });
-
-
-
-    
-
-
 
 
 

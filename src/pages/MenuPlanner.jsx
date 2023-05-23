@@ -36,6 +36,7 @@ function MenuPlanner() {
   const [loading, setLoading] = useState(false);
   const [formComplete, setFormComplete] = useState(false);
   const [errors, setErrors] = useState({ ageError: "", weightError: "" });
+  const [resultError, setResultError] = useState("");
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [hasPaid, setHasPaid] = useState(false);
@@ -120,7 +121,9 @@ try {
       const result = await generateTrainingProgramNew({ messages });
       menu = result.data.choices[0].message.content;
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
+      setResultError('Error generating menu. Please try again later.');
+
     }
     setMenu(menu);
     setLoading(false);
@@ -358,6 +361,10 @@ try {
                   </p>
                 </div>
               </div>
+            ) : resultError ? (
+              <div className="text-center error-message">
+                <p>{resultError}</p>
+              </div> 
             ) : (
               <div className="formatted-menu">{menuFormatted(menu)}</div>
             )}

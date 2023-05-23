@@ -22,7 +22,6 @@ import {
 } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
-import axios from 'axios';
 
 
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -42,6 +41,7 @@ const TrainingProgramForm = () => {
   const [loading, setLoading] = useState(false);
   const [formComplete, setFormComplete] = useState(false);
   const [errors, setErrors] = useState({ ageError: "", weightError: "" });
+  const [resultError, setResultError] = useState("");
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [hasPaid, setHasPaid] = useState(false);
@@ -198,7 +198,8 @@ const TrainingProgramForm = () => {
       // const result = await generateTrainingProgram({ messages });
       trainingProgram = result.data.choices[0].message.content;
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
+      setResultError('Something went wrong. Please try again later.');
     }
     setTrainingProgram(trainingProgram);
     setLoading(false);
@@ -614,11 +615,20 @@ const TrainingProgramForm = () => {
                     Just a few moments, we're creating the perfect workout plan
                     for you...
                   </p>
+                  
                 </div>
               </div>
             )}
-         {trainingProgram && trainingProgramFormatted(trainingProgram)}
-{!loading && (
+
+          {resultError && (
+            <div class="text-center error-message">
+              <p>{resultError}</p>
+            </div>
+            )}
+
+
+{trainingProgram && !resultError && trainingProgramFormatted(trainingProgram)}
+{!loading && !resultError && (
   <CopyToClipboard
     text={
       trainingProgram &&
