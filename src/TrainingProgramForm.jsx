@@ -46,9 +46,9 @@ const TrainingProgramForm = () => {
   const [user, setUser] = useState(null);
   const [hasPaid, setHasPaid] = useState(false);
   const functions = getFunctions();
-  const generateTrainingProgram = httpsCallable(
+  const generateTrainingProgramNew = httpsCallable(
     functions,
-    "generateTrainingProgram"
+    "generateTrainingProgramNew"
   );
 
   async function createUserDocument(user) {
@@ -193,13 +193,12 @@ const TrainingProgramForm = () => {
         },
       ];
 
-      const result = await axios.post('https://us-central1-myfit-ai.cloudfunctions.net/generateTrainingProgram', {
-        messages
-      });
+      const result = await generateTrainingProgramNew({ messages });
+      
       // const result = await generateTrainingProgram({ messages });
       trainingProgram = result.data.choices[0].message.content;
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
     setTrainingProgram(trainingProgram);
     setLoading(false);
@@ -655,3 +654,31 @@ const TrainingProgramForm = () => {
 };
 
 export default TrainingProgramForm;
+
+
+
+// exports.generateTrainingProgram= functions.https.onRequest((request, response) => {
+//   response.set('Access-Control-Allow-Origin', '*');
+//   response.set('Access-Control-Allow-Methods', 'GET, POST');
+//   console.log('request.body.messages:', request.body);
+//   cors(request, response, async () => {
+//       try {
+//           const responseData = await axios.post('https://api.openai.com/v1/chat/completions', {
+//               model: "gpt-3.5-turbo",
+//               messages: request.body.messages,
+//               max_tokens: 1000,
+//               temperature: 0,
+//           }, {
+//               headers: {
+//                   'Content-Type': 'application/json',
+//                   'Authorization': `Bearer ${functions.config().openai.key}`
+//               }
+//           });
+
+//           return response.status(200).json(responseData.data);
+//       } catch (error) {
+//           console.error('Error executing generateTrainingProgram:', error);
+//           return response.status(500).json({ error: error });
+//       }
+//   });
+// });

@@ -40,7 +40,7 @@ function MenuPlanner() {
   const [user, setUser] = useState(null);
   const [hasPaid, setHasPaid] = useState(false);
   const functions = getFunctions();
-  const generateTrainingProgram = httpsCallable(functions, 'generateTrainingProgram');
+  const generateTrainingProgramNew = httpsCallable(functions, 'generateTrainingProgramNew');
 
 
     useEffect(() => {
@@ -117,7 +117,7 @@ try {
     .`,
     },
   ];
-      const result = await generateTrainingProgram({ messages });
+      const result = await generateTrainingProgramNew({ messages });
       menu = result.data.choices[0].message.content;
     } catch (error) {
       console.log(error);
