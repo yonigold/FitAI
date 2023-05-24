@@ -28,6 +28,7 @@ function MenuPlanner() {
   const [weight, setWeight] = useState("");
   const [gender, setGender] = useState("");
   const [nutritionRatioPreference, setNutritionRatioPreference] = useState("");
+  const [height, setHeight] = useState("");
   const [activityLevel, setActivityLevel] = useState("");
   const [exerciseFrequency, setExerciseFrequency] = useState("");
   const [fitnessGoal, setFitnessGoal] = useState("");
@@ -35,13 +36,14 @@ function MenuPlanner() {
   const [menu, setMenu] = useState("");
   const [loading, setLoading] = useState(false);
   const [formComplete, setFormComplete] = useState(false);
-  const [errors, setErrors] = useState({ ageError: "", weightError: "" });
+  const [errors, setErrors] = useState({ ageError: "", weightError: "", heightError: "" });
   const [resultError, setResultError] = useState("");
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [hasPaid, setHasPaid] = useState(false);
   const functions = getFunctions();
   const generateTrainingProgramNew = httpsCallable(functions, 'generateTrainingProgramNew');
+  const getPlan = httpsCallable(functions, 'getPlan');
 
 
     useEffect(() => {
@@ -58,7 +60,7 @@ function MenuPlanner() {
       age &&
       weight &&
       gender &&
-      nutritionRatioPreference &&
+      height &&
       activityLevel &&
       exerciseFrequency &&
       dietaryPreference &&
@@ -76,7 +78,7 @@ function MenuPlanner() {
     age,
     weight,
     gender,
-    nutritionRatioPreference,
+    height,
     activityLevel,
     exerciseFrequency,
     dietaryPreference,
@@ -88,9 +90,10 @@ function MenuPlanner() {
 
     const ageError = validateAge(age);
     const weightError = validateWeight(weight);
+    const heightError = validateHeight(height);
 
-    if (ageError || weightError) {
-      setErrors({ ageError, weightError });
+    if (ageError || weightError || heightError) {
+      setErrors({ ageError, weightError, heightError });
       return;
     }
 
@@ -102,24 +105,24 @@ try {
     {
       role: "system",
       content:
-        "Act as a personal fitness trainer & nutriton expert and create a menu plan for according to the details of the trainee. Make a professional menu that considers nutrition fundemntals and the trainee fitness goals.",
+        "Act as a personal fitness trainer & nutriton expert and create a menu plan according to the details of the trainee. ",
     },
     {
       role: "user",
-      content: `Please create a personalized one day menu plan for a ${age}-year-old ${gender} with the following details:
+      content: `Please create a personalized one day menu plan for a  ${age}-year-old with the following details:
     weight: ${weight} kg
-    nutritionRatioPreference: ${nutritionRatioPreference}
-    activityLevel: ${activityLevel}
-    exerciseFrequency: ${exerciseFrequency}
     fitnessGoal: ${fitnessGoal}
     dietaryPreference: ${dietaryPreference}
     Please provide daily caloric intake and protein, carbohydrate, and fat amounts for each day
-
+    
     .`,
     },
   ];
+
       const result = await generateTrainingProgramNew({ messages });
       menu = result.data.choices[0].message.content;
+
+      setResultError("");
     } catch (error) {
       console.log(error.message);
       setResultError('Error generating menu. Please try again later.');
@@ -137,7 +140,7 @@ try {
             age,
             weight,
             gender,
-            nutritionRatioPreference,
+            height,
             activityLevel,
             exerciseFrequency,
             fitnessGoal,
@@ -165,6 +168,13 @@ try {
   const validateWeight = (weight) => {
     if (weight < 40 || weight > 220) {
       return "You must be between 40 and 220 kg to use this service";
+    }
+    return "";
+  };
+
+  const validateHeight = (height) => {
+    if (height < 120 || height > 220) {
+      return "You must be between 120 and 220 cm to use this service";
     }
     return "";
   };
@@ -253,18 +263,19 @@ try {
               </select>
             </label>
             <label>
-              Nutriton Ratio Preference:
-              <select
-                value={nutritionRatioPreference}
-                onChange={(e) => setNutritionRatioPreference(e.target.value)}
+              Height (cm):
+              <input
+                type="number"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+                min='120'
+                max='220'
                 style={{ color: "black" }}
-              >
-                <option value="">Select nutrition ratio preference</option>
-                <option value="advanced">Low Carb</option>
-                <option value="intermediate">Low Fat</option>
-                <option value="High-protein">High-protein</option>
-                <option value="beginner">Balanced</option>
-              </select>
+              />
+              {errors.heightError && (
+                <p className="error">{errors.heightError}</p>
+              )}
+                
             </label>
             <label>
               Activity Level:
@@ -336,7 +347,7 @@ try {
 
           <div className="training-program menu-program">
             Your Menu:
-            {loading ? (
+            {loading && (
               <div class="text-center loading">
                 <div role="status">
                   <svg
@@ -361,13 +372,23 @@ try {
                   </p>
                 </div>
               </div>
-            ) : resultError ? (
-              <div className="text-center error-message">
-                <p>{resultError}</p>
-              </div> 
-            ) : (
+           )}
+           {resultError && (
+            <div class="text-center error-message">
+              <p>{resultError}</p>
+            </div>
+            )}
+
+            {menu && (
               <div className="formatted-menu">{menuFormatted(menu)}</div>
             )}
+
+
+            
+
+            
+
+
           </div>
         </div>
       </div>
@@ -376,3 +397,4 @@ try {
 }
 
 export default MenuPlanner;
+

@@ -1,7 +1,51 @@
 const functions = require("firebase-functions");
 const paypal = require("@paypal/checkout-server-sdk");
 const cors = require('cors')({origin: true});
+
 const axios = require('axios');
+const {Configuration, OpenAIApi} = require('openai');
+
+const configuration = new Configuration({
+    apiKey: functions.config().openai.key,
+});
+
+const openai = new OpenAIApi(configuration);
+
+// exports.openaiCall = functions.https.onRequest( (request, response) => {
+//     cors(request, response, async () => {
+//         const data = request.body;
+//         const result = await openai.createCompletion({
+//             model: "gpt-3.5-turbo",
+//             messages: data.messages,
+//             max_tokens: 1300,
+//             temperature: 0,
+//             headers: {
+//                 'Access-Control-Allow-Origin': '*',
+//                 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+//             }
+//         });
+//         return response.status(200).json(result);
+//     });
+// });
+
+exports.getPlan = functions.https.onCall(async (data, context) => {
+    try {
+       const result = await openai.createCompletion({
+        model: "gpt-3.5-turbo",
+        messages: data.messages,
+        max_tokens: 1600,
+        temperature: 0,
+    });
+    return result.data;  
+    } catch (error) {
+        console.error('OpenAI API error:', error.message);
+        throw new functions.https.HttpsError('unknown', 'OpenAI API error');
+      }
+   
+});
+
+
+
 
 const clientId = functions.config().paypal.client_id;
 const clientSecret = functions.config().paypal.client_secret;
@@ -85,7 +129,6 @@ exports.generateTrainingProgramNew = functions.runWith(runtimeOpts).https.onCall
   }
 
 });
-
 
 
 
